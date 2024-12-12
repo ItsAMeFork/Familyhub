@@ -1,0 +1,45 @@
+{
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null",
+    "users": {
+      "$uid": {
+        ".validate": "newData.hasChildren(['name', 'email'])"
+      }
+    },
+    "meals": {
+      "$mealId": {
+        ".validate": "newData.hasChildren(['name', 'addedBy'])",
+        "votes": {
+          "$uid": {
+            ".validate": "auth != null && $uid === auth.uid"
+          }
+        }
+      }
+    },
+    "tasks": {
+      "$taskId": {
+        ".validate": "newData.hasChildren(['title', 'status'])"
+      }
+    },
+    "events": {
+      "$eventId": {
+        ".validate": "newData.hasChildren(['title', 'start', 'addedBy'])",
+        "attendees": {
+          "$uid": {
+            ".validate": "auth != null && ($uid === auth.uid || root.child('events').child($eventId).child('addedBy').val() === auth.uid)"
+          }
+        }
+      }
+    },
+    "notifications": {
+      "$uid": {
+        ".read": "auth != null && $uid === auth.uid",
+        ".write": "auth != null",
+        "$notificationId": {
+          ".validate": "newData.hasChildren(['title', 'message', 'timestamp'])"
+        }
+      }
+    }
+  }
+}
